@@ -18,7 +18,7 @@ class Info(commands.GroupCog, group_name="info"):
     async def serverinfo(self, interaction: discord.Interaction):
         server = interaction.guild
         embed = discord.Embed(title=f"INFORMAÇÕES DO SERVIDOR", color=0x7575FF)
-        if server.icon.url is not None:
+        if server.icon:
             embed.set_author(name=server.name, icon_url=server.icon.url)
         else:
             embed.set_author(name=server.name)
