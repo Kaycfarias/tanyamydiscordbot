@@ -12,4 +12,5 @@ pip install -r requirements.txt
 Adcione o TOKEN e as demais credenciais no arquivo ``.env`` na raiz do projeto
 pronto, agora você pode iniciar o bot e começar a usar
 ```sh
-python main.py```
+python main.py
+```
