@@ -1,5 +1,4 @@
 import datetime
-import sqlite3
 
 import discord
 from discord import app_commands
@@ -111,7 +110,10 @@ class Info(commands.GroupCog, group_name="info"):
         name="usuário",
         description="[útilidades] Veja as informações sobre um membro ou de si próprio ",
     )
-    async def userinfo(self, interaction: discord.Interaction, membro: discord.User = None):
+    @app_commands.describe(
+    	membro="Id ou Menção"
+    )
+    async def userinfo(self, interaction: discord.Interaction, membro: discord.Member = None):
         if membro is None:
             membro = interaction.user
         embed = discord.Embed(
@@ -219,11 +221,10 @@ class BotaoUserView(discord.ui.View):
         row=1,
     )
     async def on_cargos(self, interaction: discord.Interaction, Button: discord.ui.Button):
-        mencao = []
-        for role in self.membro.roles:
-            mencao.append(role.mention)
-
-        cargo_string = "\n".join(mencao)
+        cargos = [role.mention for role in self.membro.roles]
+        cargos.reverse()
+        
+        cargo_string = "\n".join(cargos)
         embed = discord.Embed(
             title="todos os cargos do usuário", description=cargo_string, color=0x7575FF
         )
@@ -237,213 +238,62 @@ class BotaoUserView(discord.ui.View):
         row=1,
     )
     async def on_perms(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if self.membro.guild_permissions.create_instant_invite:
-            convite = "sim"
-        else:
-            convite = "não"
-
-        if self.membro.guild_permissions.kick_members:
-            kick = "sim"
-        else:
-            kick = "não"
-
-        if self.membro.guild_permissions.ban_members:
-            ban = "sim"
-        else:
-            ban = "não"
-        if self.membro.guild_permissions.administrator:
-            adm = "sim"
-        else:
-            adm = "não"
-        if self.membro.guild_permissions.manage_channels:
-            chats = "sim"
-        else:
-            chats = "não"
-
-        if self.membro.guild_permissions.manage_guild:
-            guild = "sim"
-        else:
-            guild = "não"
-
-        if self.membro.guild_permissions.add_reactions:
-            reacoes = "sim"
-        else:
-            reacoes = "não"
-
-        if self.membro.guild_permissions.view_audit_log:
-            log = "sim"
-        else:
-            log = "não"
-
-        if self.membro.guild_permissions.priority_speaker:
-            speak = "sim"
-        else:
-            speak = "não"
-
-        if self.membro.guild_permissions.stream:
-            stream = "sim"
-        else:
-            stream = "não"
-
-        if self.membro.guild_permissions.read_messages:
-            read = "sim"
-        else:
-            read = "não"
-
-        if self.membro.guild_permissions.send_messages:
-            send = "sim"
-        else:
-            send = "não"
-
-        if self.membro.guild_permissions.send_tts_messages:
-            tts = "sim"
-        else:
-            tts = "não"
-
-        if self.membro.guild_permissions.manage_messages:
-            msm = "sim"
-        else:
-            msm = "não"
-
-        if self.membro.guild_permissions.embed_links:
-            links = "sim"
-        else:
-            links = "não"
-
-        if self.membro.guild_permissions.attach_files:
-            files = "sim"
-        else:
-            files = "não"
-
-        if self.membro.guild_permissions.read_message_history:
-            read_his = "sim"
-        else:
-            read_his = "não"
-
-        if self.membro.guild_permissions.mention_everyone:
-            mention = "sim"
-        else:
-            mention = "não"
-
-        if self.membro.guild_permissions.external_emojis:
-            ex_emoji = "sim"
-        else:
-            ex_emoji = "não"
-
-        if self.membro.guild_permissions.view_guild_insights:
-            insights = "sim"
-        else:
-            insights = "não"
-
-        if self.membro.guild_permissions.connect:
-            connect = "sim"
-        else:
-            connect = "não"
-
-        if self.membro.guild_permissions.speak:
-            falar = "sim"
-        else:
-            falar = "não"
-
-        if self.membro.guild_permissions.mute_members:
-            mute = "sim"
-        else:
-            mute = "não"
-        if self.membro.guild_permissions.deafen_members:
-            deafen = "sim"
-        else:
-            deafen = "não"
-
-        if self.membro.guild_permissions.move_members:
-            move = "sim"
-        else:
-            move = "não"
-
-        if self.membro.guild_permissions.use_voice_activation:
-            uva = "sim"
-        else:
-            uva = "não"
-
-        if self.membro.guild_permissions.change_nickname:
-            mudar_apelido = "sim"
-        else:
-            mudar_apelido = "não"
-
-        if self.membro.guild_permissions.manage_nicknames:
-            gere_nic = "sim"
-        else:
-            gere_nic = "não"
-
-        if self.membro.guild_permissions.manage_roles:
-            gere_roles = "sim"
-        else:
-            gere_roles = "não"
-
-        if self.membro.guild_permissions.manage_webhooks:
-            webhook = "sim"
-        else:
-            webhook = "não"
-
-        if self.membro.guild_permissions.manage_emojis:
-            man_roles = "sim"
-        else:
-            man_roles = "não"
-
-        if self.membro.guild_permissions.use_application_commands:
-            app_com = "sim"
-        else:
-            app_com = "não"
-
-        if self.membro.guild_permissions.request_to_speak:
-            pedir_falar = "sim"
-        else:
-            pedir_falar = "não"
-
-        if self.membro.guild_permissions.manage_events:
-            man_events = "sim"
-        else:
-            man_events = "não"
-
-        if self.membro.guild_permissions.manage_threads:
-            man_threads = "sim"
-        else:
-            man_threads = "não"
-
-        if self.membro.guild_permissions.create_public_threads:
-            cre_plu_thre = "sim"
-        else:
-            cre_plu_thre = "não"
-
-        if self.membro.guild_permissions.create_private_threads:
-            cre_pri_thre = "sim"
-        else:
-            cre_pri_thre = "não"
-
-        if self.membro.guild_permissions.external_stickers:
-            ex_fig = "sim"
-        else:
-            ex_fig = "não"
-
-        if self.membro.guild_permissions.send_messages_in_threads:
-            send_msm_thre = "sim"
-        else:
-            send_msm_thre = "não"
-
-        if self.membro.guild_permissions.use_embedded_activities:
-            embed_atv = "sim"
-        else:
-            embed_atv = "não"
-
-        if self.membro.guild_permissions.moderate_members:
-            mod_member = "sim"
-        else:
-            mod_member = "não"
-        #
-        # ('moderate_members', True)
+        
+        perms = {
+        	"create_instant_invite": "Criar convite instantâneo",
+        	"kick_members": "Expulsar membros",
+        	"ban_members": "Banir membros",
+        	"administrator": "Administrador",
+        	"manage_channels": "Gerenciar canais",
+        	"manage_guild": "Gerenciar servidor",
+        	"add_reactions": "Adicionar reações",
+        	"view_audit_log": "Ver registro de auditoria",
+        	"priority_speaker": "Voz prioritária",
+        	"stream": "Vídeo",
+        	"read_messages": "Ler mensagens",
+        	"send_messages": "Enviar mensagens",
+        	"send_tts_messages": "Enviar mensagens de texto-para-voz",
+        	"manage_messages": "Gerenciar mensagens",
+        	"embed_links": "Inserir links",
+        	"attach_files": "Anexar arquivos",
+        	"read_message_history": "Ver histórico de mensagens",
+        	"mention_everyone": "Mencionar @everyone @here e todos os cargos",
+        	"external_emojis": "Usar emojis externos",
+        	"view_guild_insights": "Ver insignias do servidor",
+        	"connect": "Conectar",
+        	"speak": "Falar",
+        	"mute_members": "Silenciar membros",
+        	"deafen_members": "Ensurdecer membros",
+        	"move_members": "Mover membros",
+        	"use_voice_activation": "Usar ativação por voz",
+        	"change_nickname": "Alterar apelido",
+        	"manage_nicknames": "Gerenciar apelidos",
+        	"manage_roles": "Gerenciar cargos",
+        	"manage_webhooks": "Gerenciar webhooks",
+        	"manage_expressions": "Gerenciar expressões",
+        	"use_application_commands": "Usar comandos de aplicativos",
+        	"request_to_speak": "Pedir para falar",
+        	"manage_events": "Gerenciar eventos",
+        	"manage_threads": "Gerenciar tópicos",
+        	"create_public_threads": "Criar tópicos públicos",
+        	"create_private_threads": "Criar tópicos privados",
+        	"external_stickers": "Usar figurinhas externas",
+        	"send_messages_in_threads": "Enviar mensagens nos tópicos",
+        	"use_embedded_activities": "Usar atividades",
+        	"moderate_members": "Moderar membros",
+        	"use_soundboard": "Usar efeitos sonoros",
+        	"create_expressions": "Criar expressões",
+        	"use_external_sounds": "Usar sons externos",
+        	"send_voice_messages":  "Enviar mensagens de voz",
+        	"create_events": "Criar eventos",
+        	"view_creator_monetization_analytics": "Ver análises de monetização do criador",
+        	"send_polls":"Criar enquetes",
+        	"use_external_apps": "Usar aplicativos externos" # Por algum motivo essa permissão sempre está retornando False
+        }
+        
         embed = discord.Embed(
             title="PERMISSÕES DO MEMBRO",
-            description=f"""
-                    Criar convite: {convite}\nExpulsar membros: {kick}\nBanir membros: {ban}\nAdministrador: {adm}\nGerenciar canais: {chats}\nGerenciar servidor: {guild}\nAdcionar reações: {reacoes}\nVer registro de auditoria: {log}\nVoz prioritária: {speak}\nCompartilhamento de tela: {stream}\nLer mensagens: {read}\nEnviar mensagens: {send}\nEnviar mensagens de texto-para-voz: {tts}\nGerenciar mensagens: {msm}\nMostrar conteudo de links: {links}\nAnexar arquivos: {files}\nLer histórico de mensagens: {read_his}\nMencionar everyone: {mention}\nUsar emojis externos: {ex_emoji}\nVer o insights do servidor: {insights}\nSe conectar: {connect}\nFalar: {falar}\nMutar membros: {mute}\nEnsurdecer membros: {deafen}\nMover membros: {move}\nUsar ativação de voz: {uva}\nMudar apelido: {mudar_apelido}\nGerenciar apelidos: {gere_nic}\nGerenciar cargos: {gere_roles}\nGerenciar webhooks: {webhook}\nGerenciar emojis: {man_roles}\nUsar comandos de aplicativo: {app_com}\nPedir pra falar: {pedir_falar}\nGerenciar eventos: {man_events}\nGerenciar tópicos: {man_threads}\nCriar tópicos públicos: {cre_plu_thre}\nCriar tópicos privados: {cre_pri_thre}\nUsar figurinhas externas: {ex_fig}\nEnviar mensagens em tópicos: {send_msm_thre}\nUsar atividades: {embed_atv}\nModerar membros: {mod_member}""",
+            description="\n".join([f"{perms.get(name)}: {'sim' if value else 'não'}" for name, value in self.membro.guild_permissions]),
             color=0x7575FF,
         )
         await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=300)

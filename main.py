@@ -36,4 +36,4 @@ class MyBot(commands.Bot):
         await cogsLoader(self) # 
 
 
-MyBot()  # Inicar o BOT
+MyBot()  # Iniciar o BOT
