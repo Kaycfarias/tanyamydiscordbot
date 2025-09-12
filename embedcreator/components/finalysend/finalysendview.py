@@ -53,7 +53,7 @@ class finalySendView(discord.ui.View):
         row=1,
     )
     async def on_enviar(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.edit_message(view=chooseChannelView(self.embeds, self.bot))
+        await interaction.response.edit_message(view=chooseChannelView(self.embeds, self.bot, finalySendView, self.defaultView))
 
     @discord.ui.button(
         label="Editar embed já enviada",

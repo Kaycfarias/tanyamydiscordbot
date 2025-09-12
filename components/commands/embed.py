@@ -8,7 +8,7 @@ from embedcreator.defaultview import defaultView
 
 @commands.bot_has_permissions(send_messages=True)
 @app_commands.guild_only()
-class Embed(commands.GroupCog, group_name="embed"):
+class Embed(commands.GroupCog, name="embed", description=_T("[utilities] Commands for creating embeds")):
     def __init__(self, bot):
         self.bot = bot
 

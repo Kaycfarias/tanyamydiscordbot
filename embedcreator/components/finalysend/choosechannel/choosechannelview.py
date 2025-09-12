@@ -1,10 +1,11 @@
 import discord
 
-
 class chooseChannelView(discord.ui.View):
-    def __init__(self, embeds, bot):
+    def __init__(self, embeds, bot, finalySendView, defaultView):
         self.embeds = embeds
         self.bot = bot
+        self.finalySendView = finalySendView
+        self.defaultView = defaultView
         super().__init__(timeout=None)
         self.add_item(EscolherChatDropDown(self.embeds, self.bot))
 
@@ -16,7 +17,7 @@ class chooseChannelView(discord.ui.View):
         row=0,
     )
     async def on_voltar_enviar(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.edit_message(view=finalyView(self.embeds, self.bot, self.defaultView))
+        await interaction.response.edit_message(view=self.finalySendView(self.embeds, self.bot, self.defaultView))
 
 
 class EscolherChatDropDown(discord.ui.ChannelSelect):
