@@ -1,110 +1,171 @@
 import discord
 from discord import app_commands
+import json
+import os
+from pathlib import Path
+from typing import Dict, Optional
 
 
 class myCustomTranslator(app_commands.Translator):
+    """
+    Sistema de tradução customizado baseado em arquivos JSON.
+    Suporta múltiplos idiomas com carregamento dinâmico de traduções.
+    """
+    
+    def __init__(self):
+        self.translations_dir = Path(__file__).parent / "translations"
+        self.config: Dict = {}
+        self.translations_cache: Dict[str, Dict] = {}
+        
+        # Carregar configurações e traduções
+        self._load_config()
+        self._load_translations()
+
+    def _load_config(self) -> None:
+        """Carrega o arquivo de configuração das traduções."""
+        config_path = self.translations_dir / "config.json"
+        
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                self.config = json.load(f)
+        except FileNotFoundError:
+            print(f"⚠️ Arquivo de configuração não encontrado: {config_path}")
+            # Configuração padrão
+            self.config = {
+                "default_language": "en_US",
+                "supported_languages": [],
+                "fallback_behavior": "return_original"
+            }
+        except json.JSONDecodeError as e:
+            print(f"❌ Erro ao carregar configuração: {e}")
+            self.config = {"default_language": "en_US", "supported_languages": []}
+
+    def _load_translations(self) -> None:
+        """Carrega todos os arquivos de tradução habilitados."""
+        if not self.config.get("supported_languages"):
+            return
+            
+        for lang_config in self.config["supported_languages"]:
+            if not lang_config.get("enabled", True):
+                continue
+                
+            lang_code = lang_config["code"]
+            file_name = lang_config["file"]
+            file_path = self.translations_dir / file_name
+            
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    translation_data = json.load(f)
+                    
+                # Combinar todas as categorias em um dicionário único
+                combined_translations = {}
+                for category, translations in translation_data.items():
+                    if category == "metadata":
+                        continue
+                    if isinstance(translations, dict):
+                        combined_translations.update(translations)
+                
+                self.translations_cache[lang_code] = combined_translations
+                print(f"✅ Traduções carregadas para {lang_config['name']}: {len(combined_translations)} items")
+                
+            except FileNotFoundError:
+                print(f"⚠️ Arquivo de tradução não encontrado: {file_path}")
+            except json.JSONDecodeError as e:
+                print(f"❌ Erro ao carregar tradução {lang_code}: {e}")
+
+    def _get_language_code_from_locale(self, locale: discord.Locale) -> Optional[str]:
+        """Converte discord.Locale para código de idioma interno."""
+        locale_mapping = {
+            discord.Locale.american_english: "en_US",
+            discord.Locale.brazil_portuguese: "pt_BR",
+            # Adicione mais mapeamentos conforme necessário
+        }
+        return locale_mapping.get(locale)
+
     async def translate(
         self,
         string: app_commands.locale_str,
         locale: discord.Locale,
         context: app_commands.TranslationContext,
-    ):
+    ) -> Optional[str]:
         """
-        .`locale_str` é a string que está solicitando a tradução
-         `locale` é o idioma de destino para traduzir
-         `context` é a origem desta string, por exemplo, TranslationContext.command_name, etc
-         Esta função deve retornar uma string (que foi traduzida), ou `None` para sinalizar que não há tradução disponível, e o padrão será o original
+        Traduz strings usando os arquivos JSON de tradução.
+        
+        Args:
+            string: String solicitando tradução
+            locale: Idioma de destino
+            context: Contexto da string (comando, descrição, etc.)
+            
+        Returns:
+            String traduzida ou None se não houver tradução disponível
         """
+        # Converter locale do Discord para código interno
+        lang_code = self._get_language_code_from_locale(locale)
+        if not lang_code:
+            return None
+            
+        # Buscar tradução no cache
+        translations = self.translations_cache.get(lang_code, {})
         message_str = string.message
-        if message_str == "help":
-            if locale == discord.Locale.brazil_portuguese:
-                return "ajuda"
-        elif message_str == "See information about the bot and the list of available commands.":
-            if locale == discord.Locale.brazil_portuguese:
-                return "veja informações sobre bot e a lista de comandos disponíveis."
+        
+        translation = translations.get(message_str)
+        
+        if translation:
+            return translation
+            
+        # Fallback behavior configurado
+        fallback = self.config.get("fallback_behavior", "return_original")
+        if fallback == "return_original":
+            return None  # Discord usará o texto original
+        elif fallback == "return_default":
+            default_lang = self.config.get("default_language", "en_US")
+            default_translations = self.translations_cache.get(default_lang, {})
+            return default_translations.get(message_str)
+            
+        return None
 
-        elif message_str == "create":
-            if locale == discord.Locale.brazil_portuguese:
-                return "criar"
+    def add_translation(self, lang_code: str, original: str, translated: str) -> bool:
+        """
+        Adiciona uma tradução ao cache (não persiste no arquivo).
+        
+        Args:
+            lang_code: Código do idioma (ex: "pt_BR")
+            original: Texto original
+            translated: Texto traduzido
+            
+        Returns:
+            True se adicionado com sucesso
+        """
+        if lang_code not in self.translations_cache:
+            self.translations_cache[lang_code] = {}
+            
+        self.translations_cache[lang_code][original] = translated
+        return True
 
-        elif message_str == "advanced":
-            if locale == discord.Locale.brazil_portuguese:
-                return "avançado"
+    def reload_translations(self) -> None:
+        """Recarrega todas as traduções dos arquivos JSON."""
+        self.translations_cache.clear()
+        self._load_config()
+        self._load_translations()
 
-        elif message_str == "[utilities] Open advanced menu for creating embeds":
-            if locale == discord.Locale.brazil_portuguese:
-                return "[útilidades] Abrir menu avançado para criação de embeds"
+    def get_supported_languages(self) -> list:
+        """Retorna lista de idiomas suportados."""
+        return [
+            {
+                "code": lang["code"],
+                "name": lang["name"],
+                "enabled": lang.get("enabled", True)
+            }
+            for lang in self.config.get("supported_languages", [])
+        ]
 
-        elif message_str == "Provide the link of the message containing the embed to be copied":
-            if locale == discord.Locale.brazil_portuguese:
-                return "Fornecer o link da mensagem contendo a incorporação a ser copiada"
+    def get_translation_stats(self) -> Dict[str, int]:
+        """Retorna estatísticas de traduções por idioma."""
+        return {
+            lang_code: len(translations)
+            for lang_code, translations in self.translations_cache.items()
+        }
 
-        elif message_str == "clear":
-            if locale == discord.Locale.brazil_portuguese:
-                return "limpar"
-
-        elif message_str == "[Moderation] Clear chat messages.":
-            if locale == discord.Locale.brazil_portuguese:
-                return "[Moderação] Limpe mensagens do chat"
-
-        elif message_str == "Please enter the number of messages to be deleted.":
-            if locale == discord.Locale.brazil_portuguese:
-                return "digite a quantidade de mensagens a serem apagadas."
-
-        elif message_str == "say":
-            if locale == discord.Locale.brazil_portuguese:
-                return "falar"
-
-        elif message_str == "[Misc] May I speak?":
-            if locale == discord.Locale.brazil_portuguese:
-                return "[Misc] Posso falar?"
-
-        elif message_str == "Tell me what to say.":
-            if locale == discord.Locale.brazil_portuguese:
-                return "Me diga o que devo dizer."
-
-        elif message_str == "Bot Latency":
-            if locale == discord.Locale.brazil_portuguese:
-                return "Latência do Bot"
-
-        elif message_str == "[Utilities] Enable slow mode in a channel":
-            if locale == discord.Locale.brazil_portuguese:
-                return "[Utilidades] Ative o modo lento em um canal"
-
-        elif message_str == "slowmode":
-            if locale == discord.Locale.brazil_portuguese:
-                return "modo_lento"
-
-        elif message_str == "Enter the desired duration:":
-            if locale == discord.Locale.brazil_portuguese:
-                return "Digite a duração desejada:"
-
-        elif message_str == "Select a channel:":
-            if locale == discord.Locale.brazil_portuguese:
-                return "Selecione um canal:"
-
-        elif message_str == "Select the time unit:":
-            if locale == discord.Locale.brazil_portuguese:
-                return "Selecione a unidade de tempo:"
-
-        elif message_str == "Second(s)":
-            if locale == discord.Locale.brazil_portuguese:
-                return "Segundo(s)"
-
-        elif message_str == "Minute(s)":
-            if locale == discord.Locale.brazil_portuguese:
-                return "Minuto(s)"
-
-        elif message_str == "Hour(s)":
-            if locale == discord.Locale.brazil_portuguese:
-                return "Hora(s)"
-        elif message_str == "user":
-            if locale == discord.Locale.brazil_portuguese:
-                return "usuário"
-        elif message_str == "[Utilities] View a user's avatar...":
-            if locale == discord.Locale.brazil_portuguese:
-                return "[Útilidades] Veja o avatar de um usuário..."
-        elif message_str == "[Utilities] View a user's profile banner...":
-            if locale == discord.Locale.brazil_portuguese:
-                return "[Útilidades] Veja o banner de perfil de um usuário..."
-        return message_str
+    def has_translation(self, lang_code: str, original: str) -> bool:
+        """Verifica se existe tradução específica."""
+        return original in self.translations_cache.get(lang_code, {})
