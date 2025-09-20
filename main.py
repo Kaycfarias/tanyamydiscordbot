@@ -3,8 +3,8 @@ from dotenv import dotenv_values
 import discord
 from discord.ext import commands
 
-from assets.cogsloader import cogsLoader
-from assets.translator import myCustomTranslator
+from assets.loader.cogsloader import cogsLoader
+from assets.translations.translator import myCustomTranslator
 
 # Carregar arquivo env
 config = dotenv_values(".env")
@@ -33,7 +33,7 @@ class MyBot(commands.Bot):
     # Rotina inicianda antes do BOT estar completamente on-line
     async def setup_hook(self):
         myCustomTranslator() # Tradutor de comandos
-        await cogsLoader(self) # 
+        await cogsLoader(self) # Carrega os componentes (cogs ou extensões)
 
 
 MyBot()  # Iniciar o BOT
