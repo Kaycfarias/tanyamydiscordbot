@@ -1,2 +1,56 @@
-# Created by venv; see https://docs.python.org/3/library/venv.html
-*
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# zip files
+*.zip
+
+# Virtual environment
+venv/
+env/
+.venv/
+ENV/
+
+# Environment variables
+.env
+
+# VSCode settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python egg info
+*.egg-info/
+dist/
+build/
+
+# Logs
+*.log
+
+# Test cache
+.pytest_cache/
+
+# MyPy cache
+.mypy_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+
+# Discord.py cache (if any)
+.cache/
+
+# Local data
+*.sqlite3
+
+# Ignore secrets
+secrets.json
+
+# Ignore pip wheel cache
+pip-wheel-metadata/
+
+# Ignore node_modules if present (for docs or web assets)
+node_modules/

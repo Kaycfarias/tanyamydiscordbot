@@ -1,0 +1,31 @@
+{
+  "loader_config": {
+    "components_directory": "./components",
+    "log_level": "INFO",
+    "show_load_times": true,
+    "show_tree_structure": true,
+    "show_summary": true
+  },
+  "loading_rules": {
+    "ignore_patterns": [
+      "__init__.py",
+      "__pycache__",
+      ".pyc",
+      "_test.py",
+      ".backup"
+    ],
+    "priority_categories": ["events", "commands"],
+    "optional_categories": ["experimental", "dev"]
+  },
+  "error_handling": {
+    "continue_on_error": true,
+    "detailed_tracebacks": false,
+    "retry_failed": false,
+    "retry_attempts": 3
+  },
+  "performance": {
+    "parallel_loading": false,
+    "cache_results": true,
+    "preload_check": true
+  }
+}

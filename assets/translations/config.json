@@ -1,0 +1,22 @@
+{
+  "default_language": "en_US",
+  "supported_languages": [
+    {
+      "code": "en_US",
+      "discord_locale": "american_english",
+      "name": "English",
+      "file": "en_US.json",
+      "enabled": true
+    },
+    {
+      "code": "pt_BR",
+      "discord_locale": "brazil_portuguese",
+      "name": "Português Brasileiro",
+      "file": "pt_BR.json",
+      "enabled": true
+    }
+  ],
+  "fallback_behavior": "return_original",
+  "cache_translations": true,
+  "auto_reload": false
+}

@@ -1,0 +1,47 @@
+{
+  "metadata": {
+    "language": "en_US",
+    "language_name": "English",
+    "version": "1.0.0",
+    "last_updated": "2025-09-19",
+    "translator": "Default"
+  },
+  "commands": {
+    "help": "help",
+    "create": "create",
+    "advanced": "advanced",
+    "clear": "clear",
+    "say": "say",
+    "slowmode": "slowmode",
+    "user": "user"
+  },
+  "descriptions": {
+    "See information about the bot and the list of available commands.": "See information about the bot and the list of available commands.",
+    "[utilities] Open advanced menu for creating embeds": "[Utilities] Open advanced menu for creating embeds",
+    "Provide the link of the message containing the embed to be copied": "Provide the link of the message containing the embed to be copied",
+    "[Moderation] Clear chat messages.": "[Moderation] Clear chat messages.",
+    "Please enter the number of messages to be deleted.": "Please enter the number of messages to be deleted.",
+    "[Misc] May I speak?": "[Misc] May I speak?",
+    "Tell me what to say.": "Tell me what to say.",
+    "Bot Latency": "Bot Latency",
+    "[Utilities] Enable slow mode in a channel": "[Utilities] Enable slow mode in a channel",
+    "[Utilities] View a user's avatar...": "[Utilities] View a user's avatar...",
+    "[Utilities] View a user's profile banner...": "[Utilities] View a user's profile banner..."
+  },
+  "interface": {
+    "Enter the desired duration:": "Enter the desired duration:",
+    "Select a channel:": "Select a channel:",
+    "Select the time unit:": "Select the time unit:"
+  },
+  "time_units": {
+    "Second(s)": "Second(s)",
+    "Minute(s)": "Minute(s)",
+    "Hour(s)": "Hour(s)"
+  },
+  "categories": {
+    "utilities": "Utilities",
+    "moderation": "Moderation",
+    "misc": "Misc",
+    "info": "Info"
+  }
+}

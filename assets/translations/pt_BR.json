@@ -1,0 +1,47 @@
+{
+  "metadata": {
+    "language": "pt_BR",
+    "language_name": "Português Brasileiro",
+    "version": "1.0.0",
+    "last_updated": "2025-09-19",
+    "translator": "Kaycfarias"
+  },
+  "commands": {
+    "help": "ajuda",
+    "create": "criar",
+    "advanced": "avançado",
+    "clear": "limpar",
+    "say": "falar",
+    "slowmode": "modo_lento",
+    "user": "usuário"
+  },
+  "descriptions": {
+    "See information about the bot and the list of available commands.": "Veja informações sobre o bot e a lista de comandos disponíveis.",
+    "[utilities] Open advanced menu for creating embeds": "[Útilidades] Abrir menu avançado para criação de embeds",
+    "Provide the link of the message containing the embed to be copied": "Forneça o link da mensagem contendo o embed a ser copiado",
+    "[Moderation] Clear chat messages.": "[Moderação] Limpar mensagens do chat",
+    "Please enter the number of messages to be deleted.": "Digite a quantidade de mensagens a serem apagadas.",
+    "[Misc] May I speak?": "[Diversos] Posso falar?",
+    "Tell me what to say.": "Me diga o que devo dizer.",
+    "Bot Latency": "Latência do Bot",
+    "[Utilities] Enable slow mode in a channel": "[Útilidades] Ativar modo lento em um canal",
+    "[Utilities] View a user's avatar...": "[Útilidades] Ver o avatar de um usuário...",
+    "[Utilities] View a user's profile banner...": "[Útilidades] Ver o banner de perfil de um usuário..."
+  },
+  "interface": {
+    "Enter the desired duration:": "Digite a duração desejada:",
+    "Select a channel:": "Selecione um canal:",
+    "Select the time unit:": "Selecione a unidade de tempo:"
+  },
+  "time_units": {
+    "Second(s)": "Segundo(s)",
+    "Minute(s)": "Minuto(s)",
+    "Hour(s)": "Hora(s)"
+  },
+  "categories": {
+    "utilities": "Útilidades",
+    "moderation": "Moderação",
+    "misc": "Diversos",
+    "info": "Informações"
+  }
+}
