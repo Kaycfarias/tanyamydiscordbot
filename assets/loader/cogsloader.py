@@ -3,6 +3,8 @@ import traceback
 from pathlib import Path
 from typing import Dict, List
 
+from ..logging import get_logger
+
 
 class CogsLoader:
     """Carregador simples e eficiente de componentes do bot."""
@@ -10,6 +12,7 @@ class CogsLoader:
     def __init__(self, components_dir: str = "./components"):
         self.components_dir = Path(components_dir)
         self.results: Dict[str, List[Dict]] = {}
+        self.logger = get_logger(__name__)
 
     def _should_load_component(self, component_file: str) -> bool:
         """Verifica se o arquivo deve ser carregado."""
@@ -28,12 +31,12 @@ class CogsLoader:
             await bot.load_extension(component_path)
             return {"name": component_name, "status": "success"}
         except Exception as e:
-            print(f"Falha ao carregar: {component_name} - {str(e)}")
+            self.logger.error(f"❌ Falha ao carregar: {component_name} - {str(e)}")
             return {"name": component_name, "status": "failed", "error": str(e)}
 
     def _print_tree_structure(self) -> None:
         """Imprime estrutura em árvore simples e bonita."""
-        print("\n🗂️  Componentes carregados:")
+        self.logger.info("🗂️  Componentes carregados:")
         
         categories = list(self.results.keys())
         for i, category in enumerate(categories):
@@ -44,10 +47,10 @@ class CogsLoader:
             
             # Prefixo da categoria
             if is_last_category:
-                print(f"   └── {category_icon} {category}")
+                self.logger.info(f"   └── {category_icon} {category}")
                 category_indent = "       "
             else:
-                print(f"   ├── {category_icon} {category}")
+                self.logger.info(f"   ├── {category_icon} {category}")
                 category_indent = "   │   "
             
             # Componentes da categoria
@@ -60,14 +63,14 @@ class CogsLoader:
                 
                 # Conectores
                 if is_last_component:
-                    print(f"{category_indent}└── {status_emoji} {result['name']}.py")
+                    self.logger.info(f"{category_indent}└── {status_emoji} {result['name']}.py")
                 else:
-                    print(f"{category_indent}├── {status_emoji} {result['name']}.py")
+                    self.logger.info(f"{category_indent}├── {status_emoji} {result['name']}.py")
 
     async def load_components(self, bot) -> bool:
         """Carrega todos os componentes disponíveis."""
         if not self.components_dir.exists():
-            print(f"❌ Diretório não encontrado: {self.components_dir}")
+            self.logger.error(f"❌ Diretório não encontrado: {self.components_dir}")
             return False
         
         self.results.clear()
@@ -122,7 +125,7 @@ class CogsLoader:
             else:
                 summary_emoji = "❌"
                 
-            print(f"\n{summary_emoji} {success_count}/{total_count} componentes carregados ({success_rate:.0f}%)")
+            self.logger.info(f"{summary_emoji} {success_count}/{total_count} componentes carregados ({success_rate:.0f}%)")
         
         return success_count > 0
 

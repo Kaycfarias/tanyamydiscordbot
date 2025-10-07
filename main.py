@@ -1,7 +1,6 @@
 import os
 import sys
 import logging
-import asyncio
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -10,19 +9,12 @@ from discord.ext import commands
 
 from assets.loader.cogsloader import cogsLoader
 from assets.translations.translator import myCustomTranslator
+from assets.logging import setup_logging, set_discord_logging_level, get_logger
+from assets.logging.colors import Colors
 
-# Configurar logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler('bot.log', encoding='utf-8')
-    ]
-)
-
-# Logging do discord em nível INFO (inclui confirmação de voz)
-logging.getLogger('discord.client').setLevel(logging.INFO)
+# Configurar sistema de logging
+setup_logging()
+set_discord_logging_level(logging.INFO)
 
 # Carregar variáveis de ambiente
 load_dotenv()
@@ -59,7 +51,7 @@ class TanyaBot(commands.Bot):
         )
         
         # Logger para esta classe
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_logger(__name__)
         
         # Configurações do bot
         self.chatgpt_key = CHATGPT_KEY
@@ -73,7 +65,7 @@ class TanyaBot(commands.Bot):
             # Configurar tradutor
             translator = myCustomTranslator()
             await self.tree.set_translator(translator)
-            self.logger.info("✅ Sistema de tradução configurado")
+            self.logger.info("🔧 Sistema de tradução configurado")
             
             # Carregar componentes
             success = await cogsLoader(self)
@@ -81,7 +73,7 @@ class TanyaBot(commands.Bot):
                 self.logger.error("❌ Falha ao carregar componentes")
                 return
                 
-            self.logger.info("✅ Componentes carregados com sucesso")
+            self.logger.info("📦 Componentes carregados com sucesso")
             
         except Exception as e:
             self.logger.error(f"❌ Erro durante setup_hook: {e}")
@@ -111,25 +103,28 @@ def main():
     """Função principal para inicializar o bot."""
     # Verificar versão do Python
     if sys.version_info < (3, 8):
-        print("❌ Python 3.8+ é necessário!")
+        print(f"{Colors.BRIGHT_RED}❌ Python 3.8+ é necessário!{Colors.RESET}")
         sys.exit(1)
+    
+    # Logger principal
+    logger = get_logger(__name__)
     
     # Verificar se estamos no diretório correto
     if not Path("components").exists():
-        logging.error("❌ Diretório 'components' não encontrado!")
-        logging.error("Execute o bot a partir do diretório raiz do projeto")
+        logger.error("❌ Diretório 'components' não encontrado!")
+        logger.error("Execute o bot a partir do diretório raiz do projeto")
         sys.exit(1)
     
     # Criar e executar o bot
-    logging.info("🚀 Inicializando Tanya Bot...")
+    logger.info("🚀 Inicializando Tanya Bot...")
     
     try:
         bot = TanyaBot()
         bot.run_bot()
     except KeyboardInterrupt:
-        logging.info("👋 Bot interrompido pelo usuário")
+        logger.info("👋 Bot interrompido pelo usuário")
     except Exception as e:
-        logging.error(f"❌ Erro fatal durante execução: {e}")
+        logger.error(f"❌ Erro fatal durante execução: {e}")
         sys.exit(1)
 
 

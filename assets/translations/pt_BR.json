@@ -9,11 +9,13 @@
   "commands": {
     "help": "ajuda",
     "create": "criar",
-    "advanced": "avançado",
+    "advanced": "avancado",
     "clear": "limpar",
     "say": "falar",
-    "slowmode": "modo_lento",
-    "user": "usuário"
+    "slowmode": "modo-lento",
+    "user": "usuario",
+    "info": "informacoes",
+    "emoji": "emoji"
   },
   "descriptions": {
     "See information about the bot and the list of available commands.": "Veja informações sobre o bot e a lista de comandos disponíveis.",
@@ -26,7 +28,11 @@
     "Bot Latency": "Latência do Bot",
     "[Utilities] Enable slow mode in a channel": "[Útilidades] Ativar modo lento em um canal",
     "[Utilities] View a user's avatar...": "[Útilidades] Ver o avatar de um usuário...",
-    "[Utilities] View a user's profile banner...": "[Útilidades] Ver o banner de perfil de um usuário..."
+    "[Utilities] View a user's profile banner...": "[Útilidades] Ver o banner de perfil de um usuário...",
+    "[útilidades] Veja as informações de um emoji": "[Útilidades] Ver informações de um emoji",
+    "[útilidades] crie um emoji personalizado": "[Útilidades] Criar um emoji personalizado",
+    "[útilidades] Copie e adcione o emoji no servidor atual": "[Útilidades] Copiar emoji para o servidor",
+    "[útilidades] Veja as informações sobre o servidor atual": "[Útilidades] Ver informações do servidor"
   },
   "interface": {
     "Enter the desired duration:": "Digite a duração desejada:",

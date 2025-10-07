@@ -99,6 +99,10 @@ class myCustomTranslator(app_commands.Translator):
         Returns:
             String traduzida ou None se não houver tradução disponível
         """
+        # Não traduzir nomes de comandos para evitar problemas de validação
+        if context.location.name in ['command_name', 'group_name']:
+            return None
+        
         # Converter locale do Discord para código interno
         lang_code = self._get_language_code_from_locale(locale)
         if not lang_code:
@@ -108,7 +112,16 @@ class myCustomTranslator(app_commands.Translator):
         translations = self.translations_cache.get(lang_code, {})
         message_str = string.message
         
-        translation = translations.get(message_str)
+        # Verificar traduções em diferentes categorias
+        translation = None
+        
+        # Primeiro verificar descrições
+        if context.location.name == 'command_description':
+            translation = translations.get("descriptions", {}).get(message_str)
+        
+        # Se não encontrou, buscar tradução direta
+        if not translation:
+            translation = translations.get(message_str)
         
         if translation:
             return translation
@@ -120,7 +133,7 @@ class myCustomTranslator(app_commands.Translator):
         elif fallback == "return_default":
             default_lang = self.config.get("default_language", "en_US")
             default_translations = self.translations_cache.get(default_lang, {})
-            return default_translations.get(message_str)
+            return default_translations.get("descriptions", {}).get(message_str) or default_translations.get(message_str)
             
         return None
 

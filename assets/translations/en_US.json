@@ -13,7 +13,9 @@
     "clear": "clear",
     "say": "say",
     "slowmode": "slowmode",
-    "user": "user"
+    "user": "user",
+    "info": "info",
+    "emoji": "emoji"
   },
   "descriptions": {
     "See information about the bot and the list of available commands.": "See information about the bot and the list of available commands.",
