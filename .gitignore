@@ -30,6 +30,12 @@ build/
 # Logs
 *.log
 
+# Backup files and archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
 # Test cache
 .pytest_cache/
 
