@@ -131,7 +131,7 @@ class Ajuda(commands.Cog):
             description=f"Olá! Eu sou um bot programado em [Python/discord.py](https://github.com/Rapptz/discord.py) <:python:1122514160870236250> e estou em constante desenvolvimento. Fui criado usando as ferramentas disponíveis com apenas um celular.\nMeu prefixo padrão é **`{self.bot.command_prefix}`**, mas a maioria dos meus comandos só está disponível através de comandos de barra (/). Certifique-se de usar (/) para acessar todos os recursos e funcionalidades que tenho a oferecer.\n\nSe você gostar da minha companhia e quiser me apoiar, por favor, vote em mim através deste link:\n**[Vote em mim](https://top.gg/bot/1103371629117063278/vote)**",
             color=0xFF99EE,
         )
-        embed.set_thumbnail(url=self.bot.user.avatar.url)
+        embed.set_thumbnail(url=self.bot.user.avatar.url if self.bot.user.avatar else None)
         await send_embed(ctx, embed, self.bot)
 
 

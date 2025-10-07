@@ -60,14 +60,10 @@ class Errors(commands.Cog):
                 description=f"Sinto muito, um erro aconteceu inexperado, o desenvolvedor ja foi informado",
                 color=0xFF9090,
             )
-            dono = self.bot.get_user(597216735984091137)
-            await dono.create_dm()
-            await dono.send(
-            	embed=discord.Embed(
-            	title="Um erro aconteceu",
-            	description=f"```{error}```\nserver: {ctx.guild} - {ctx.channel}\nUsuario: {ctx.author} - {ctx.author.mention}\nComando:{ctx.command}\nConteudo da mensagem{ctx.message.content[200:]}",
-               	 )
-          	 )
+            print(
+            	"Um erro aconteceu\n",
+            	f"{error}\nserver: {ctx.guild} - {ctx.channel}\nUsuario: {ctx.author} - {ctx.author.mention}\nComando:{ctx.command}\nConteudo da mensagem{ctx.message.content[200:]}",
+            )
         try:
             await ctx.reply(embed=em)
         except discord.errors.Forbidden:

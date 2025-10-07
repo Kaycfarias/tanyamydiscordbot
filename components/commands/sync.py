@@ -11,9 +11,9 @@ class Sync(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def sync(self, ctx):
-        fmt_priv = await self.bot.tree.sync(guild=discord.Object(id=1100204172667781120))
+        #fmt_priv = await self.bot.tree.sync(guild=discord.Object(id=1100204172667781120))
         fmt = await self.bot.tree.sync()
-        await ctx.send(f"Sincronizados {len(fmt_priv)} comandos privados e {fmt} globais")
+        await ctx.send(f"Sincronizados {len(fmt)} comandos")
 
     @commands.command()
     @commands.is_owner()
