@@ -508,14 +508,6 @@ _Bot profissional para criação de embeds e gerenciamento de servidores Discord
 [![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)](https://python.org)
 [![discord.py](https://img.shields.io/badge/discord.py-2.5+-00d4aa?logo=discord&logoColor=white)](https://github.com/Rapptz/discord.py)
 
-**Tanya Discord Bot** - Criado com ❤️ por [Kay](https://github.com/Kaycfarias)
-
-_Bot profissional para criação de embeds e gerenciamento de servidores Discord_
-
-[![Discord](https://img.shields.io/badge/Discord-Bot-7289da?logo=discord&logoColor=white)](https://discord.com/developers/applications)
-[![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)](https://python.org)
-[![discord.py](https://img.shields.io/badge/discord.py-2.5+-00d4aa?logo=discord&logoColor=white)](https://github.com/Rapptz/discord.py)
-
 **🔗 Links Importantes:**
 
 - [🤖 Convite do Bot](https://discord.com/oauth2/authorize?client_id=1103371629117063278&permissions=275415166032&scope=applications.commands%20bot)
