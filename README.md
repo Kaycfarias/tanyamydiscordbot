@@ -212,14 +212,6 @@ O bot rotaciona automaticamente entre diferentes atividades:
 
 ### 🔧 Configuração do Ambiente de Desenvolvimento
 
-**Dependências de Desenvolvimento:**
-
-```bash
-pip install -r requirements.txt
-# Para desenvolvimento com hot-reload:
-pip install watchdog  # Opcional para auto-restart
-```
-
 **Estrutura Recomendada:**
 
 ```bash
