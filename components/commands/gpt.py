@@ -8,9 +8,6 @@ from dotenv import dotenv_values
 from discord import app_commands
 from discord.ext import commands
 
-CONFIG = dotenv_values(".env")
-CHATGPT_KEY = CONFIG["CHATGPT_KEY"] # API key chatgpt
-
 async def responder(message: discord.Message, pergunta, bot):
     if message.author.id in Chatgpt.resposta_andamento:
         em = discord.Embed(
@@ -45,14 +42,15 @@ async def responder(message: discord.Message, pergunta, bot):
 
 
 class ClientChatGpt:
-    def __init__(self):
+    def __init__(self, api_key=None):
         self.sessions = {}
         self.resposta_andamento = []
+        self.api_key = api_key
 
     def create_session(self, user_id):
         if user_id not in self.sessions:
             self.sessions[user_id] = {
-                "model": "gpt-3.5-turbo",
+                "model": "gpt-5",
                 "messages": [
                     {
                         "role": "system",
@@ -76,7 +74,7 @@ class ClientChatGpt:
         api_url = "https://api.openai.com/v1/chat/completions"
         #api_url = "https://free.churchless.tech/v1/chat/completions"
         headers = {
-			"Authorization": f'Bearer {CHATGPT_KEY}',
+			"Authorization": f'Bearer {self.api_key}',
 			"Content-Type": "application/json"}
 
         payload = {
@@ -263,6 +261,9 @@ class BotaoConfigView(discord.ui.View):
 class gpt(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        # Inicializar o ClientChatGpt com a chave do bot
+        global Chatgpt
+        Chatgpt = ClientChatGpt(api_key=bot.chatgpt_key)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):

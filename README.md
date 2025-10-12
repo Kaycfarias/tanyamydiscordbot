@@ -192,7 +192,7 @@ O bot rotaciona automaticamente entre diferentes atividades:
 | `/user info`             | Dados do usuário/membro            | Perfil detalhado   |
 | `/util ping`             | Latência e performance             | Diagnóstico        |
 | `/gpt ask`               | Integração ChatGPT (opcional)      | IA conversacional  |
-| `/sync`                  | Sincronização de comandos          | Admin only         |
+| `<prefix>sync`           | Sincronização de comandos          | Admin only         |
 
 ### 🌍 Sistema de Localização
 
@@ -492,7 +492,7 @@ Este projeto está sob a licença [MIT](LICENSE). Veja o arquivo `LICENSE` para 
 
 <div align="center">
 
-**Tanya Discord Bot** - Criado com ❤️ por [Kay](https://github.com/Kaycfarias)
+**Tanya Discord Bot** - Criado com ❤️ por [Kayc](https://github.com/Kaycfarias)
 
 _Bot profissional para criação de embeds e gerenciamento de servidores Discord_
 
