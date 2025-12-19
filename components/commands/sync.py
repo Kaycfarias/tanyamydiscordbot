@@ -20,15 +20,24 @@ class Sync(commands.Cog):
     async def reload(self, ctx):
         cog_s = []
         cog_f = []
-        for f in os.listdir("./cogs"):
-            if f.endswith(".py"):
-                try:
-                    await self.bot.reload_extension("cogs." + f[:-3])
-                    print(f"Recarregado: {f}")
-                    cog_s.append(f)
-                except Exception:
-                    print(f"Falha ao recarregar: {f}")
-                    cog_f.append(f)
+        components_dir = "./components"
+        
+        for category in os.listdir(components_dir):
+            category_path = os.path.join(components_dir, category)
+            if not os.path.isdir(category_path) or category.startswith("_"):
+                continue
+            
+            for f in os.listdir(category_path):
+                if f.endswith(".py") and not f.startswith("_"):
+                    extension_name = f"components.{category}.{f[:-3]}"
+                    try:
+                        await self.bot.reload_extension(extension_name)
+                        print(f"Recarregado: {extension_name}")
+                        cog_s.append(f[:-3])
+                    except Exception as e:
+                        print(f"Falha ao recarregar: {extension_name} - {e}")
+                        cog_f.append(f[:-3])
+        
         await ctx.send(f"**recarregado com sucesso:** {cog_s}\n**falha ao recarregar:** {cog_f}")
 
 

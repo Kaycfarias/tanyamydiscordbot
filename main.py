@@ -33,7 +33,7 @@ class TanyaBot(commands.Bot):
     Classe principal do bot Tanya.
     Bot especializado em criação de embeds e moderação.
     """
-    
+
     def __init__(self):
         # Configurar intents necessários
         intents = discord.Intents.default()
@@ -41,7 +41,7 @@ class TanyaBot(commands.Bot):
         intents.members = True
         intents.guilds = True
         intents.voice_states = True  # Para funcionalidades de voz
-        
+
         super().__init__(
             command_prefix=">>",
             case_insensitive=True,
@@ -49,36 +49,36 @@ class TanyaBot(commands.Bot):
             help_command=None,
             description="Bot especializado em criação de embeds e moderação",
         )
-        
+
         # Logger para esta classe
         self.logger = get_logger(__name__)
-        
+
         # Configurações do bot
         self.chatgpt_key = CHATGPT_KEY
         self.version = "2.0.0"
-        
+
     async def setup_hook(self):
         """Hook executado durante a inicialização do bot."""
         try:
             self.logger.info("🚀 Iniciando bot Tanya...")
-            
+
             # Configurar tradutor
             translator = myCustomTranslator()
             await self.tree.set_translator(translator)
             self.logger.info("🔧 Sistema de tradução configurado")
-            
+
             # Carregar componentes
             success = await cogsLoader(self)
             if not success:
                 self.logger.error("❌ Falha ao carregar componentes")
                 return
-                
+
             self.logger.info("📦 Componentes carregados com sucesso")
-            
+
         except Exception as e:
             self.logger.error(f"❌ Erro durante setup_hook: {e}")
             raise
-        
+
     async def close(self):
         """Cleanup quando o bot está sendo desligado."""
         self.logger.info("👋 Desligando bot...")
@@ -92,7 +92,9 @@ class TanyaBot(commands.Bot):
             self.logger.error("❌ Token inválido! Verifique o arquivo .env")
             sys.exit(1)
         except discord.PrivilegedIntentsRequired:
-            self.logger.error("❌ Intents privilegiados necessários! Configure no Discord Developer Portal")
+            self.logger.error(
+                "❌ Intents privilegiados necessários! Configure no Discord Developer Portal"
+            )
             sys.exit(1)
         except Exception as e:
             self.logger.error(f"❌ Erro inesperado: {e}")
@@ -105,19 +107,19 @@ def main():
     if sys.version_info < (3, 8):
         print(f"{Colors.BRIGHT_RED}❌ Python 3.8+ é necessário!{Colors.RESET}")
         sys.exit(1)
-    
+
     # Logger principal
     logger = get_logger(__name__)
-    
+
     # Verificar se estamos no diretório correto
     if not Path("components").exists():
         logger.error("❌ Diretório 'components' não encontrado!")
         logger.error("Execute o bot a partir do diretório raiz do projeto")
         sys.exit(1)
-    
+
     # Criar e executar o bot
     logger.info("🚀 Inicializando Tanya Bot...")
-    
+
     try:
         bot = TanyaBot()
         bot.run_bot()
@@ -130,3 +132,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
