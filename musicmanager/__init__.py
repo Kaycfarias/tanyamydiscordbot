@@ -39,7 +39,7 @@ class MusicManager:
             self._spotdl.downloader = Downloader()
         
         # Provider para buscar URLs de streaming
-        self._audio_provider = YouTubeMusic()
+        self._audio_provider = YouTubeMusic(cookie_file="cookies.txt")
         
         # Cache de URLs de streaming (query -> url)
         self._stream_cache: Dict[str, str] = {}

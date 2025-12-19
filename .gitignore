@@ -60,3 +60,5 @@ pip-wheel-metadata/
 
 # Ignore node_modules if present (for docs or web assets)
 node_modules/
+# yt-dlp cookies file
+cookies.txt
