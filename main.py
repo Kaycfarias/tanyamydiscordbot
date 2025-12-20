@@ -34,7 +34,6 @@ if not TOKEN:
 class TanyaBot(commands.Bot):
     """
     Classe principal do bot Tanya.
-    Bot especializado em criação de embeds e moderação.
     """
 
     def __init__(self):
@@ -66,8 +65,8 @@ class TanyaBot(commands.Bot):
             self.logger.info("🚀 Iniciando bot Tanya...")
             nodes = [
                 wavelink.Node(
-                    uri=LAVALINK_URI,
-                    password=LAVALINK_PASSWORD
+                    uri="http://lavalink.jirayu.net:13592",
+                    password="youshallnotpass"
                 )
             ]
             await wavelink.Pool.connect(nodes=nodes, client=self, cache_capacity=100)
