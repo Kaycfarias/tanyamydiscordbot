@@ -1,29 +1,37 @@
 import discord
+import wavelink
 from discord import app_commands
 from discord.app_commands import locale_str as _T
 from discord.ext import commands
 
-from musicmanager import get_manager
-
-# Opções do FFmpeg para streaming
-FFMPEG_OPTIONS = {
-    'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-    'options': '-vn'  # Sem vídeo, apenas áudio
-}
+from musicmanager import (
+    search_tracks,
+    get_or_create_player,
+    play_track,
+    stop_player,
+    pause_player,
+    resume_player,
+    skip_track,
+    set_volume,
+    get_player,
+    create_track_embed,
+    create_nowplaying_embed,
+    SearchCache,
+)
 
 
 class Play(commands.Cog):
-    def __init__(self, bot):
+    """Comandos de música usando Lavalink."""
+    
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.music_manager = get_manager()
+        self._cache = SearchCache()
 
     @app_commands.command(name=_T("play"), description=_T("[Music] Play a music in voice channel"))
     @app_commands.guild_only()
-    @app_commands.describe(
-        music=_T("Name of the music or Spotify URL to play")
-    )
+    @app_commands.describe(music=_T("Name of the music or URL to play"))
     async def on_play(self, interaction: discord.Interaction, music: str):
-        # Verifica se o usuário está em um canal de voz
+        """Toca uma música."""
         if not interaction.user.voice:
             await interaction.response.send_message(
                 "❌ Você precisa estar em um canal de voz!",
@@ -31,57 +39,40 @@ class Play(commands.Cog):
             )
             return
         
-        voice_channel = interaction.user.voice.channel
-        
         await interaction.response.defer()
         
-        # Busca a música e obtém URL de streaming
-        song, stream_url = await self.music_manager.search_and_get_stream(music)
-        
-        if not song or not stream_url:
-            await interaction.followup.send("❌ Nenhuma música encontrada.")
-            return
-        
-        # Conecta ao canal de voz (ou usa conexão existente)
-        voice_client = interaction.guild.voice_client
-        
-        if voice_client is None:
-            voice_client = await voice_channel.connect()
-        elif voice_client.channel != voice_channel:
-            await voice_client.move_to(voice_channel)
-        
-        # Para música atual se estiver tocando
-        if voice_client.is_playing():
-            voice_client.stop()
-        
-        # Toca o streaming
-        audio_source = discord.FFmpegPCMAudio(stream_url, **FFMPEG_OPTIONS)
-        voice_client.play(audio_source)
-        
-        # Cria embed com informações da música
-        embed = discord.Embed(
-            title="🎵 Tocando agora",
-            description=f"**{song.name}**",
-            color=discord.Color.green()
-        )
-        embed.add_field(name="Artista", value=song.artist, inline=True)
-        embed.add_field(name="Álbum", value=song.album_name or "N/A", inline=True)
-        
-        if song.cover_url:
-            embed.set_thumbnail(url=song.cover_url)
-        
-        embed.set_footer(text=f"Spotify: {song.url}")
-        
-        await interaction.followup.send(embed=embed)
+        try:
+            # Obtém ou cria o player
+            player = await get_or_create_player(
+                interaction.guild,
+                interaction.user.voice.channel,
+                interaction.channel
+            )
+            
+            # Verifica cache ou busca
+            track = self._cache.get(music)
+            if not track:
+                tracks = await search_tracks(music, limit=1, timeout=5.0)
+                if not tracks:
+                    await interaction.followup.send("❌ Nenhuma música encontrada.")
+                    return
+                track = tracks[0]
+            
+            # Toca e envia embed
+            embed = await play_track(player, track)
+            await interaction.followup.send(embed=embed)
+            
+        except Exception as e:
+            await interaction.followup.send(
+                f"❌ Erro ao tocar música: {str(e)[:100]}",
+                ephemeral=True
+            )
 
     @app_commands.command(name=_T("stop"), description=_T("[Music] Stop the music and leave"))
     @app_commands.guild_only()
     async def on_stop(self, interaction: discord.Interaction):
-        voice_client = interaction.guild.voice_client
-        
-        if voice_client:
-            voice_client.stop()
-            await voice_client.disconnect()
+        """Para a música e desconecta."""
+        if await stop_player(interaction.guild):
             await interaction.response.send_message("⏹️ Música parada.", ephemeral=True)
         else:
             await interaction.response.send_message("❌ Não estou tocando nada.", ephemeral=True)
@@ -89,10 +80,8 @@ class Play(commands.Cog):
     @app_commands.command(name=_T("pause"), description=_T("[Music] Pause the music"))
     @app_commands.guild_only()
     async def on_pause(self, interaction: discord.Interaction):
-        voice_client = interaction.guild.voice_client
-        
-        if voice_client and voice_client.is_playing():
-            voice_client.pause()
+        """Pausa a música."""
+        if await pause_player(interaction.guild):
             await interaction.response.send_message("⏸️ Música pausada.", ephemeral=True)
         else:
             await interaction.response.send_message("❌ Nenhuma música tocando.", ephemeral=True)
@@ -100,37 +89,65 @@ class Play(commands.Cog):
     @app_commands.command(name=_T("resume"), description=_T("[Music] Resume the music"))
     @app_commands.guild_only()
     async def on_resume(self, interaction: discord.Interaction):
-        voice_client = interaction.guild.voice_client
-        
-        if voice_client and voice_client.is_paused():
-            voice_client.resume()
+        """Retoma a música pausada."""
+        if await resume_player(interaction.guild):
             await interaction.response.send_message("▶️ Música retomada.", ephemeral=True)
         else:
             await interaction.response.send_message("❌ Nenhuma música pausada.", ephemeral=True)
 
-
-    @app_commands.command(name=_T("search"), description=_T("[Music] Search for a music"))
+    @app_commands.command(name=_T("skip"), description=_T("[Music] Skip current song"))
     @app_commands.guild_only()
-    async def on_search(self, interaction: discord.Interaction, music: str):
-        song = await self.music_manager.search(music)
-        await interaction.response.send_message(f'{song}', ephemeral=False)
+    async def on_skip(self, interaction: discord.Interaction):
+        """Pula a música atual."""
+        if await skip_track(interaction.guild):
+            await interaction.response.send_message("⏭️ Música pulada.", ephemeral=True)
+        else:
+            await interaction.response.send_message("❌ Nenhuma música tocando.", ephemeral=True)
 
+    @app_commands.command(name=_T("volume"), description=_T("[Music] Set volume (0-100)"))
+    @app_commands.guild_only()
+    @app_commands.describe(level=_T("Volume level (0-100)"))
+    async def on_volume(self, interaction: discord.Interaction, level: int):
+        """Define o volume."""
+        result = await set_volume(interaction.guild, level)
+        if result is not None:
+            await interaction.response.send_message(f"🔊 Volume: {result}%", ephemeral=True)
+        else:
+            await interaction.response.send_message("❌ Não estou conectado.", ephemeral=True)
+
+    @app_commands.command(name=_T("nowplaying"), description=_T("[Music] Show current song"))
+    @app_commands.guild_only()
+    async def on_nowplaying(self, interaction: discord.Interaction):
+        """Mostra a música atual."""
+        player = get_player(interaction.guild)
+        embed = create_nowplaying_embed(player) if player else None
+        
+        if embed:
+            await interaction.response.send_message(embed=embed)
+        else:
+            await interaction.response.send_message("❌ Nenhuma música tocando.", ephemeral=True)
 
     @on_play.autocomplete('music')
     async def music_autocomplete(self, interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
+        """Autocomplete para buscar músicas."""
         if len(current) < 2:
             return []
         
-        musics = await self.music_manager.search(current)
+        tracks = await search_tracks(current, limit=5, timeout=2.0)
         choices = []
-        for music in musics[:10]:
-            display_name = f"{music.name} - {music.artist}"
-            # Salva a Song no cache para reutilizar no play
-            self.music_manager._song_cache[display_name] = music
+        
+        for track in tracks:
+            display_name = f"{track.title} - {track.author}"
+            if len(display_name) > 100:
+                display_name = display_name[:97] + "..."
+            if len(display_name) < 1:
+                continue
+            
+            self._cache.set(display_name, track)
             choices.append(app_commands.Choice(name=display_name, value=display_name))
         
         return choices
-        
+
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Play(bot))

@@ -5,6 +5,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 import discord
+import wavelink
 from discord.ext import commands
 
 from assets.loader.cogsloader import cogsLoader
@@ -22,6 +23,8 @@ load_dotenv()
 # Validar configurações necessárias
 TOKEN = os.getenv("TOKEN")
 CHATGPT_KEY = os.getenv("CHATGPT_KEY")
+LAVALINK_URI = os.getenv("LAVALINK_URI")
+LAVALINK_PASSWORD = os.getenv("LAVALINK_PASSWORD")
 
 if not TOKEN:
     logging.error("TOKEN não encontrado no arquivo .env")
@@ -61,6 +64,14 @@ class TanyaBot(commands.Bot):
         """Hook executado durante a inicialização do bot."""
         try:
             self.logger.info("🚀 Iniciando bot Tanya...")
+            nodes = [
+                wavelink.Node(
+                    uri=LAVALINK_URI,
+                    password=LAVALINK_PASSWORD
+                )
+            ]
+            await wavelink.Pool.connect(nodes=nodes, client=self, cache_capacity=100)
+            self.logger.info("🎵 Conectado ao Lavalink")
 
             # Configurar tradutor
             translator = myCustomTranslator()

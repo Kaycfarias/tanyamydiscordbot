@@ -5,3 +5,4 @@ aiohttp
 PyNaCl
 
 spotdl
+wavelink
